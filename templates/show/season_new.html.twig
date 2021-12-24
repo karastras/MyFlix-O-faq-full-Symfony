@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ show.title }}: Nouvelle saison
+{% endblock %}
+
+{% block body %}
+
+<div class="container">
+    <h2>
+        {{ show.title }}: Nouvelle saison
+    </h2>
+    {{ form_start(form) }}
+        {{ form_row(form.number) }}
+        {{ form_row(form.releasedAt) }}
+        {{ form_row(form.isOnProduction) }}
+        <button class="btn btn-warning" id="btn_add_episode">
+            Ajouter un épisode
+        </button>
+        
+        <div class="form-group">
+            {{ form_widget(form.episodes) }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Valider</button>
+    {{ form_end(form) }}
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        let divEpisodes = document.querySelector('#season_episodes'),
+            btnAdd = document.querySelector('#btn_add_episode'),
+            episodeIndex= document.querySelectorAll('#season_episodes>fieldset').length;
+
+        function handleAddEpisode(event) {
+        
+        event.preventDefault();
+        let episodeTemplate = divEpisodes.dataset.prototype,
+            episodeDiv = document.createElement('div');
+
+        // On créé une div vide et on la remplit avec le contenu du template (prototype) 
+        episodeDiv.innerHTML = episodeTemplate.replace(/__name__/g, episodeIndex);
+
+        // On incrémente l'index
+        episodeIndex+=1; // episodeIndex = episodeIndex + 1
+
+        // On rajoute episodeDiv à la div principlae (divEpisodes) pour qu'elle
+        // apparaisse dans le formulaire
+        divEpisodes.append(episodeDiv);
+        }
+        // On va lier le bouton d'ajout d'un episode à l'élément clic
+        // Pour ajouter dynaimquement un formulaire d'épisodes
+        btnAdd.addEventListener('click', handleAddEpisode)
+        
+    </script>
+
+{% endblock %}

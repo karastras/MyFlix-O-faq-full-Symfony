@@ -1,0 +1,73 @@
+<html>
+<head>
+<meta charset='utf-8'>
+<style>
+  #mld .relation { font-variant: small-caps; font-weight: bold }
+  #mld .primary { text-decoration: underline }
+  #mld .foreign { font-style: oblique }
+  #mld .normal { }
+</style>
+</head>
+<body>
+<div id='mld'>
+<!--
+<div>
+  <span class='relation'>Character</span> (
+    <span class='primary'>fullname</span>
+  )
+</div>
+-->
+<div>
+  <span class='relation'>BELONGS TO</span> (
+    <span class='foreign primary'>title</span>,
+    <span class='foreign primary'>title.1</span>
+  )
+</div>
+<!--
+<div>
+  <span class='relation'>CATEGORY</span> (
+    <span class='primary'>title</span>
+  )
+</div>
+-->
+<div>
+  <span class='relation'>PERSON</span> (
+    <span class='primary'>firstname</span>,
+    <span class='normal'>lastname</span>,
+    <span class='normal'>country</span>,
+    <span class='normal'>created_at</span>,
+    <span class='foreign'>fullname</span>
+  )
+</div>
+<div>
+  <span class='relation'>PERFORM</span> (
+    <span class='foreign primary'>title</span>,
+    <span class='foreign primary'>fullname</span>
+  )
+</div>
+<div>
+  <span class='relation'>SHOW</span> (
+    <span class='primary'>title</span>,
+    <span class='normal'>synopsis</span>,
+    <span class='normal'>created_at</span>,
+    <span class='normal'>released_at</span>
+  )
+</div>
+<div>
+  <span class='relation'>EPISODE</span> (
+    <span class='primary'>number</span>,
+    <span class='normal'>title</span>,
+    <span class='foreign'>number.1</span>
+  )
+</div>
+<div>
+  <span class='relation'>SEASON</span> (
+    <span class='primary'>number</span>,
+    <span class='normal'>released_at</span>,
+    <span class='normal'>created_at</span>,
+    <span class='foreign'>title</span>
+  )
+</div>
+</div>
+</body>
+</html>

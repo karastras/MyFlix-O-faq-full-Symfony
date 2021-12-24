@@ -1,0 +1,311 @@
+# O'Flix
+
+Nous allons mettre en place un projet symfony pour concurrencer le site Netflix (enfin on va essayer en tout cas).
+
+## MCD
+Nous avons mis en place un MCD que vous retrouverez ci-dessous :
+
+```
+SHOW : title, synopsis, created_at, released_at
+HAS, 1N SHOW, 11 SEASON
+
+SEASON : number, released_at, created_at
+
+CONTAINS, 1N SEASON , 11 EPISODE
+
+EPISODE : number, title
+
+CATEGORY : title
+BELONGS TO, 1N SHOW, 0N CATEGORY
+
+Character : fullname
+PERFORM, 1N SHOW, 1N Character 
+
+PERSON : firstname, lastname, country, created_at
+IS RELATED TO, 11 PERSON , 1N Character
+
+```
+
+![Fichier MCD image](docs/Shows.png "MCD Projet Oflix")
+
+## Installation & Doctrine
+
+### Installation
+Après création du classroom, clonez le projet sur votre machine.
+
+```
+git clone git@github.com:O-clock-Isengard/symfony-oflix-VotreLoginGitHub.git
+```
+
+Puis installer les dépendances du projet avec composer :
+
+```
+composer install
+```
+
+### Doctrine
+L'ORM doctrine se chargera de faire le pont entre notre projet web en symfony et la base de données SQL.
+
+Pour installer doctrine et d'autres composants utiles, lancez la commande suivante (Si nécessaire, car **composer install** le fait déjà) : 
+
+```
+composer require annotations twig debug profiler asset maker orm
+```
+
+Créez ensuite le fichier **.env.local** à la racine de projet, et saisissez ceci :
+
+```
+DATABASE_URL=mysql://votreDBUser:votreDBPassword@127.0.0.1:3306/oflix?serverVersion=5.7.31 # Modifier la version en fonction de ce que vous avez
+```
+
+Pour connaitre votre version de MySQL (ou de mariaDB), saisissez la commande suivante : 
+
+```
+mysql --version
+```
+
+Qui renvoit quelque chose comme : mysql  Ver 14.14 Distrib **5.7.31** for Linux (x86_64). Dans ce cas la version de MySQL est **5.7.31**.
+
+:warning: si vous avez mariabDB, dans le fichier .env.local, vous devez faire **serverVersion=mariadb-laVersionDeMariaDB**
+
+**Ex :** oflix?serverVersion=mariadb-10.4 
+
+:warning: Pensez à supprimer (DROP) la base de données `oflix` depuis Adminer (ou PhpMyAdmin, MySQL Workbench, ...) pour partir sur un projet propre
+
+Il faut ensuite créer la base de données en saisissant la commande :
+
+```
+php bin/console doctrine:database:create
+```
+
+Votre base a été créée. Vérifiez sur Adminer ou tout autre outil (PhpMyAdmin, MySQL Workbench, ...) de connexion à votre server SQL
+
+Créez ensuite les tables associées à vos entités en faisant : 
+```
+php bin/console doctrine:schema:update --force
+```
+
+## Création d'une entité (Si nécessaire)
+**src/Entity**
+
+Une entité est la répresentation, sous forme de Classe PHP, d'une table en SQL.
+
+Pour créer une nouvelle entité, il faut faire : 
+
+```
+php bin/console make:entity
+```
+On nous demande : 
+- De préciser le nom de l'entité à créer 
+- De saisir le/les nom(s) du/des champs à créer
+- Leur type (Si besoin on peut saisir **?** pour afficher une liste de type de champs disponibles.
+- De préciser s'ils pourront prendre une valeur null par défaut ou non.
+
+Faites ensuite : 
+
+```
+php bin/console doctrine:schema:update --dump-sql
+```
+
+Pour vérifier (prévisualiser) quelles requetes seront appliquées en BDD. Puis executer celles-ci en faisant : 
+
+```
+php bin/console doctrine:schema:update --force
+```
+
+Vérifiez que la/les tables ont bien été créées avec leurs colonnes dans Adminer/PhpMyAdmin,...
+
+La création d'une entity depuis l'invite de commande entraine aussi la création d'une classe Repository associée (**src/Repository)**. Un repository est une classe qui nous met à disposition des méthodes permettant facilement aux données SQL.
+
+Plusieurs méthodes disponibles : 
+- find($id) : permet de retrouver une entité en fonction de son identifiant ($id)
+- findOneBy(array $criteria) : permet de retrouver une SEULE entité en fonction d'un ou plusieurs critères 
+ex : $repository->findOneBy(['title'=>'Dark'])
+- findAll() : permet de recupérer tous les résultats d'une entité
+- findBy(array $criteria) : permet de retrouver plusieurs entités en fonction d'un ou plusieurs critères
+
+En savoir plus : https://symfony.com/doc/current/doctrine.html#fetching-objects-from-the-database
+
+## Sauvegarde et Récupération de données depuis un controleur
+
+```
+php bin/console make:controller MonBeauController
+```
+
+### Sauvegarde de données
+
+```php
+namespace App\Controller;
+
+// ...
+use App\Entity\Show;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Response;
+
+class MonBeauController extends AbstractController
+{
+    /**
+     * @Route("/show", name="create_show")
+     */
+    public function createShow(): Response
+    {
+        // 1) Pour créer une nouvelle série, je vais faire appel à l'entity Manager de Doctrine
+        $entityManager = $this->getDoctrine()->getManager();
+
+        // 2) On crée une nouvelle série
+        $showFriends = new Show();
+        $showFriends->setTitle('Friends !');
+        $showFriends->setTrailer('http://www.allocine.fr/video/player_gen_cmedia=19422840&cserie=49.html');
+        $showFriends->setSynopsis('Les péripéties de 6 jeunes newyorkais liés par une profonde amitié');
+
+        // On informe Doctrine de notre (potentielle) intention de création d'une nouvelle série (aucune requete ne sera executé à ce moment là)
+        // en l'ajoutant dans une pile (liste) d'objets à (potentiellement)  sauvegarder
+        $entityManager->persist($showFriends);
+
+        // On execute là ou les requetes présentes dans la pile (i.e. the INSERT query)
+        $entityManager->flush();
+
+        return new Response("Une nouvelle série a été créé avec l'identifiant $showFriends->getId()");
+    }
+}
+```
+
+### Récupération de données
+
+```php
+namespace App\Controller;
+
+// ...
+use App\Entity\Show;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Response;
+
+class MonBeauController extends AbstractController
+{
+    /**
+     * @Route("/show/{id}", name="details_show")
+     */
+    public function showDetails($id): Response
+    {
+        $show = $this->getDoctrine()
+                     ->getRepository(Show::class)
+                     ->find($id);
+
+        if (!$show) {
+            throw $this->createNotFoundException(
+                "Aucune série avec l'idenfiant $id"
+            );
+        }
+
+        // Si la série existe, on l'affiche dans Twig
+        return $this->render('show/detail.html.twig', ['show' => $show]);
+    }
+}
+```
+
+### Relations entre entités
+Pour mettre en place une relation entre entité, on va tout d'abord se poser la question de la relation qu'il y a entre elles. Prenons l'exemple de SHOW et SEASON.
+
+On sait que :
+- Une série (One) peut contenir plusieurs saisons (Many)
+==> Cela implique que du point de vue d'une série, on a affaire à une relation de type **One To Many**
+
+- Une ou plusieurs (Many) saisons ne peuvent être associées qu'à une seule (One) série
+==> Cela implique que du point de vue d'une saison, on a affaire à une relation de type **Many To One**
+
+Une fois que l'on sait la relation qui existe entre nos entités, on peut lancer la commande suivante :
+```
+php bin/console make:entity
+```
+La commande va tout d'abord nous demander le nom de l'entité à modifier. Si l'on souhaite créer une relation entre SHOW et SEASON, du point de vue de SHOW, on va devoir saisir le nom de l'entité SHOW.
+
+On choisit le type de relation. Ici OneToMany. Et si l'on ne sait vraiment quelle relation utilisé, on peut choisir le type **"relation"** que propose symfony.
+
+Comme avec les autres entités, on pourra décider :
+- Si le champs créé pour la relation sera nul ou non
+- Si on souhaite effectuer une opération inverse (inversedBy) pour récupérer des données en partant du point de vue de l'autre relation.
+
+Une fois les relations mises en place, on met à jour la base de données en faisant : 
+
+```
+php bin/console doctrine:schema:update --force
+```
+
+Vérifiez ensuite d'une clé étrangère a bien rajouté dans la table contenant le Many (Dans le cas de la relation SHOW/SEASON, la clé étrangère sera du côté SEASON).
+
+
+## Formulaire Symfony
+
+### Installation du composant Form
+```
+composer require symfony/form
+```
+
+### Création d'une classe dédiée pour notre Formulaire
+**src/Form/Type/ShowType.php**
+```php
+<?php
+
+namespace App\Form\Type;
+
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\FormBuilderInterface;
+
+class ShowType extends AbstractType {
+
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {   
+        // On utilse le builder de formulaire pour ajouter
+        // les champs que l'on souhaite voir apparaitre dans notre formulaire
+        // Le premier argument de la méthode 'add' sera le nom d'une propriété de l'entité
+        $builder
+            ->add('title', TextType::class) // J'ajoute un titre dans le formulaire
+            ->add('trailer', TextType::class) // J'ajoute un trailer dans le formulaire
+            ->add('synopsis', TextareaType::class)
+            ->add('releasedAt', DateType::class)
+            ->add('save', SubmitType::class); // J'ajoute un bouton de soumission du formulaire
+    }
+}
+```
+
+Une liste de tous les types de formulaire est disponible à cette adresse : 
+- Form Types Reference : https://symfony.com/doc/current/reference/forms/types.html
+
+### On appelle le formulaire dans le Controller
+Pour afficher notre formulaire depuis le navigateur, on va l'appeler dans notre controleur
+via la méthode `$this->createForm()`
+
+```php
+
+    /**
+     * @Route("/new", name="new")
+     */
+    public function new() {
+        // 1) On créé une série vide, qui sera rempli par le formulaire symfony
+        $show = new Show();
+
+        // 2) On créé le formulaire
+        $form = $this->createForm(ShowType::class, $show);
+
+        return $this->render('show/new.html.twig', [
+            // On transmet à twig une version compréhensible du formulaire
+            // en appellant la méthode createView
+            'showForm' => $form->createView()
+        ]);
+    }
+```
+
+### Affichage du formulaire dans la vue
+Depuis le fichier html on va appeler la fonction twig `form`, qui prend en paramètre un objet de type FormView.
+
+```html
+{{ form(showForm) }}
+```
+
+
+- Symfony Form : https://symfony.com/doc/current/forms.html
+- Symfony Form Types : https://symfony.com/doc/current/reference/forms/types/text.html

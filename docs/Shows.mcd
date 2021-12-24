@@ -1,0 +1,14 @@
+IS RELATED TO, 11 PERSON , 1N Character
+Character : fullname
+BELONGS TO, 1N SHOW, 0N CATEGORY
+CATEGORY : title
+
+PERSON : firstname, lastname, country, created_at
+PERFORM, 1N SHOW, 1N Character
+SHOW : title, synopsis, created_at, released_at
+HAS, 1N SHOW, 11 SEASON
+
+:
+EPISODE : number, title
+CONTAINS, 1N SEASON , 11 EPISODE
+SEASON : number, released_at, created_at

@@ -1,0 +1,22 @@
+<div class="d-flex flex-wrap justify-content-center">
+    {% for category in categories %}
+        <a  href=" {{ path('category_show', {'id':category.id}) }} " 
+            class="btn {{ cycle([   'bg-dark',
+                                    'btn-danger',
+                                    'btn-secondary',
+                                    'btn-info',
+                                    'btn-dark',
+                                    'btn-warning',
+                                    'btn-primary',
+                                    'btn-success',
+                                    'btn-dark',
+                                    'btn-warning',
+                                    'btn-danger'
+                                ],
+                                loop.index0)}} p-md-2 m-1 m-md-2 ">
+            <h5 class="text-center text-light font-weight-bold">
+                {{category.title}}
+            </h5>
+        </a>
+    {% endfor %}
+</div>

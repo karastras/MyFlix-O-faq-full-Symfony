@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau personnage{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1>Création d'un nouveau personnage</h1>
+
+        {{ include('character/_form.html.twig') }}
+
+        <a class="btn btn-warning mt-3 mb-3" href="{{ path('character_index') }}">back to list</a>
+    </div>
+{% endblock %}

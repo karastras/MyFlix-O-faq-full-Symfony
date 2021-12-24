@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau utilisateur{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1>Nouveau utilisateur</h1>
+
+    {{ include('user/_form.html.twig') }}
+    
+
+    <div class="form-group mt-3">
+        <p class="d-flex align-items-center">
+            Si vous avez déja un compte: 
+            <a href="{{ path('app_login') }}" class="btn btn-warning ml-2">
+                se connecter
+            </a>
+        </p>
+    </div>
+</div>
+{% endblock %}

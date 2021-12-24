@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Update: {{ category.title}}{% endblock %}
+
+{% block body %}
+
+{# Formulaire de création d'une catégorie #}
+<div class="container">
+    <h2>Update: {{ category.title}}</h2>
+    {{form_start(categoryForm)}}
+
+        {# Doc symfony : https://symfony.com/doc/current/form/form_customization.html#form-row-form-view-variables #}
+
+        {{form_row(categoryForm.title)}}
+
+        <button type="submit" class="btn btn-primary">Valider</button>
+        
+    {{form_end(categoryForm)}}
+</div>
+
+{% endblock %}

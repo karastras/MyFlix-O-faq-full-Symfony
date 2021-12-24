@@ -1,0 +1,54 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-5">
+  <div class="container-fluid">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navBarMain" aria-controls="navBarMain" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand {% if app.request.attributes.get('_route') == 'main_home' %}active{% endif %}" aria-current="page" href="{{ path('main_home') }}">MyFlix</a>
+    <div class="collapse navbar-collapse d-lg-flex" id="navBarMain">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link {% if app.request.attributes.get('_route') == 'main_home' %}active{% endif %}" aria-current="page" href="{{ path('main_home') }}">Accueil</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if app.request.attributes.get('_route') == 'show_list' %}active{% endif %}" href="{{ path('show_list') }}">Séries</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if app.request.attributes.get('_route') == 'category_list' %}active{% endif %}" href="{{ path('category_list') }}">Catégories</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if app.request.attributes.get('_route') == 'character_index' %}active{% endif %}" href="{{ path('character_index') }}">Personnages</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link disabled">Top 10</a>
+        </li>
+        <li class="nav-item dropdown">
+          {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              {{ app.user.firstname }}
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="{{ path('user_show', {'id':app.user.id}) }}">Profil</a></li>
+              {% if is_granted('ROLE_ADMIN') %}
+              <li><a class="dropdown-item" href="{{ path('user_index') }}">Liste utilisateurs</a></li>
+              {% endif %}
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href=" {{ path('app_logout') }}">Se déconnecter</a></li>
+            </ul>
+            {% else %}
+              <a class="nav-link" href="{{ path('app_login') }}">Connexion / Créer un compte</a>
+          {% endif %}
+        </li>
+      </ul>
+      <form class="d-flex ml-auto" action=" {{ path('show_list') }}" method="get">
+        <input  name="search"
+                value="{{ app.request.query.get('search') }}"
+                class="form-control me-2" 
+                type="search" 
+                placeholder="Qu'allez vous regarder?" 
+                
+                aria-label="Search">
+        <button class="btn btn-secondary" type="submit">Chercher</button>
+      </form>
+    </div>
+  </div>
+</nav>

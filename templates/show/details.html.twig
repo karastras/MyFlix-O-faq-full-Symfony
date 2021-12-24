@@ -1,0 +1,118 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{show.title}}{% endblock %}
+
+{% block body %}
+
+<div class="container">
+    <h2>
+        {{show.title}} - <a class="text-decoration-none" href="{{show.trailer}}" target="_blank">Afficher le trailer </a>
+        {% if is_granted('ROLE_ADMIN') %}
+        <a class="text-decoration-none" href="{{ path('show_update', {'slug':show.slug}) }}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+            </svg>
+        </a>
+        {% endif %}
+    </h2>
+    <div class="d-lg-flex mt-4 mb-4">
+        <div class="text-center">
+            {% if show.poster == 'N/A' %}
+                <img    src="{{ asset('/pictures/showDefault.jpg') }}"
+                        class="rounded" 
+                        style="height: 20rem;" 
+                        alt="Le Poster de la série n'est pas présent"
+                >
+            {% else %}
+                <img    src="{{ show.poster ? show.poster : asset('/pictures/showDefault.jpg') }}"
+                        class="rounded" 
+                        style="height: 20rem;" 
+                        {# peut s'écrire  "Poster de la série #{show.title}" #}
+                        alt="{{ show.poster ? "Poster de la série " ~ show.title  : "Le Poster de la série n'est pas présent" }}"
+                >
+            {% endif %}
+        </div>
+        <p class="ml-lg-3 mt-3 mt-lg-0 d-lg-flex align-items-lg-center">
+            {{show.synopsis}} 
+        </p>
+    </div>
+    {% if show.getMinimumAge() %}
+        <p class="font-weight-bold">
+            Interdit au moins de <span class="badge badge-danger">{{show.getMinimumAge()}} ans</span>
+        </p>
+    {% else %}
+        <p>
+            <span class="badge badge-dark">Pas de limite d'âge</span>
+        </p>
+    {% endif %}
+
+    {# On affiche les saisons associées avec une ul courante #}
+    {% if show.seasons is not empty %}
+    <h2>
+        Saisons
+        {% if is_granted('ROLE_ADMIN') %}
+        <a href=" {{ path('show_season_new', {'slug':show.slug}) }} ">
+            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-plus-square" viewBox="0 0 16 16">
+                <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+            </svg>
+        </a>
+        {% endif %}
+    </h2>
+    {% endif %}
+    <ul>    
+        {% for season in show.seasons %}
+            <li> Saison n° {{ season.getNumber() }} - {{ season.getReleasedAt() | date('d/m/Y')}}
+                {% if is_granted('ROLE_ADMIN') %}
+                <a class="text-decoration-none" href="{{ path('show_season_update', {'slug':show.slug, 'seasonId':season.id}) }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                        <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                        <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                    </svg>
+                </a>
+                {% endif %}
+            </li>
+            <ol>
+                {% for episode in season.episodes %}
+                    <li>{{ episode.title }}</li>
+                {% endfor %}
+            </ol>
+        {% endfor %}
+    </ul>
+    
+    {# On affiche les catégories associées à la série courante #}
+    {% if show.categories is not empty %}
+    <h2>Catégories</h2>
+    {% endif %}
+    <ul>
+        {# la fonction sort(), permet de classer les résultats  https://twig.symfony.com/doc/2.x/filters/sort.html #}
+        {% for category in show.categories|sort((a, b) => a.title <=> b.title) %}
+            <li> {{ category.title }} </li>
+        {% endfor %}
+    </ul>
+    {# On affiche les personnages associées à la série courante #}
+    {% if show.characters is not empty %}
+    <h2>Personnages</h2>
+    {% endif %}
+    <ul>
+        {% for character in show.characters %}
+            <li> {{ character.fullname }} </li>
+        {% endfor %}
+    </ul>
+    <div>
+        <a href="{{ path('show_list') }}" class="btn btn-primary btn-lg">
+            Retour à la liste
+        </a>
+        {% if is_granted('ROLE_SUPER_ADMIN') %}
+        <a href="{{ path('show_delete', {'id':show.id}) }}" class="btn btn-danger btn-lg active" role="button" aria-pressed="true">
+            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-x-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                <path fill-rule="evenodd" d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+            </svg>
+            Supprimer la série
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
