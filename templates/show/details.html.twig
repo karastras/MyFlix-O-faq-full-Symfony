@@ -92,12 +92,12 @@
     
     {# On affiche les catégories associées à la série courante #}
     {% if show.categories is not empty %}
-    <h2>Catégories</h2>
+        <h2>Catégories</h2>
     {% endif %}
     <ul>
         {# la fonction sort(), permet de classer les résultats  https://twig.symfony.com/doc/2.x/filters/sort.html #}
         {% for category in show.categories|sort((a, b) => a.title <=> b.title) %}
-            <li> {{ category.title }} </li>
+            <li><a href="{{ path('category_show', {'id':category.id}) }}"> {{ category.title }} </a></li>
         {% endfor %}
     </ul>
     {# On affiche les personnages associées à la série courante #}
@@ -106,7 +106,7 @@
     {% endif %}
     <ul>
         {% for character in show.characters %}
-            <li> {{ character.fullname }} </li>
+            <li><a href="{{ path('character_show', {'id':character.id}) }}"> {{ character.fullname }} </a></li>
         {% endfor %}
     </ul>
     <div>
