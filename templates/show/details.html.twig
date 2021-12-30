@@ -102,11 +102,15 @@
     </ul>
     {# On affiche les personnages associées à la série courante #}
     {% if show.characters is not empty %}
-    <h2>Personnages</h2>
+        <h2>Personnages</h2>
     {% endif %}
     <ul>
         {% for character in show.characters %}
-            <li><a href="{{ path('character_show', {'id':character.id}) }}"> {{ character.fullname }} </a></li>
+            <li>
+                <a href="{{ path('character_show', {'id':character.id}) }}">
+                    {{ character.fullname }}
+                </a>
+            </li>
         {% endfor %}
     </ul>
     <div>

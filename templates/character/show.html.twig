@@ -31,6 +31,20 @@
                 </p>
             </div>
         </div>
+        <div>
+            {% if character.shows is not empty %}
+                <h4>Ce personnage est présent dans la/les séries suivante(s):</h4>
+            {% endif %}
+            <ul>
+                {% for show in character.shows|sort((a, b) => a.title <=> b.title) %}   
+                    <li class="font-weight-bold">
+                        <a href="{{ path('show_slug', {'slug':show.slug}) }}"> 
+                            {{show.title}}
+                        </a>
+                    </li>
+                {% endfor %}     
+            </ul>
+        </div>
         <div class="btn-group mt-3">
             <a class="btn btn-warning" href="{{ path('character_index') }}">Retour à la liste</a>
             {# Seuls les admins peuvent éditer un personnage #}
