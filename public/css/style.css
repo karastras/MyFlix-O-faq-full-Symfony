@@ -1,3 +1,21 @@
 .shadow {
-    box-shadow: rgb(136, 133, 133) .3rem .5rem .3rem;
+    box-shadow: rgb(43, 111, 199) .3rem .5rem .3rem;
+    transition: .4s;
+}
+
+.shadow:hover {
+    box-shadow: rgb(223, 59, 59) .3rem .5rem .3rem;
+}
+
+a{
+    font-weight: bold;
+    color: rgb(33, 75, 189);
+    transition: .3s;
+}
+a:hover { 
+    text-decoration: none;
+    color: rgb(214, 39, 39); }
+
+.nav-link {
+    font-weight: normal;
 }

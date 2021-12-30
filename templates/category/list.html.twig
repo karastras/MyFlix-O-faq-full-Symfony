@@ -4,8 +4,8 @@
 
 {% block body %}
 <div class="container">
-    <h1 class="mb-3">
-        Catégories
+    <h1 class="text-center mb-5 font-weight-bold">
+        Liste des catégories
         {% if is_granted('ROLE_ADMIN') %}
         <a href="{{ path('category_new') }}">
             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-plus-square" viewBox="0 0 16 16">
