@@ -23,10 +23,9 @@
                 <div class="shadow card m-2 bg-light" style="width: 15rem">
                     <a href="{{ path('character_show', {'id': character.id}) }}">
                         <img    src="{{ character.pictureFilename ? asset('uploads/pictures/' ~ character.pictureFilename) :'https://via.placeholder.com/200' }}"
+                                alt="{{ character.pictureFilename ? "portrait de " ~ character.fullname  : "Le portrait de #{character.fullname} n'est pas présent" }}"
                                 class="card-img-top" 
                                 style="height: 18rem" 
-                                {# peut s'écrire  "Poster de la série #{show.title}" #}
-                                alt="{{ character.pictureFilename ? "portrait de " ~ character.fullname  : "Le portrait n'est pas présent" }}"
                         >
                         <div class="card-body d-flex flex-wrap justify-content-between">
                             <h5 class="card-text text-dark">

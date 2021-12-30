@@ -9,7 +9,7 @@
                 <img    class="rounded" 
                         style="height: 20rem;"
                         src="{{ character.pictureFilename ? asset('uploads/pictures/' ~ character.pictureFilename) :'https://via.placeholder.com/200' }}" 
-                        alt="Image {{character.fullname}}"
+                        alt="{{ character.pictureFilename ? "portrait de " ~ character.fullname  : "Le portrait de #{character.fullname} n'est pas présent" }}"
                 >
             </div>
             <div class="d-flex flex-column justify-content-lg-center ml-lg-3">

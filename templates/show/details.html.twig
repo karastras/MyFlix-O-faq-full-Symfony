@@ -3,7 +3,6 @@
 {% block title %}{{show.title}}{% endblock %}
 
 {% block body %}
-
 <div class="container">
     <h2 class="font-weight-bold">
         {{show.title}}
@@ -16,7 +15,8 @@
             </a>
         {% endif %}
     </h2>
-
+    <p>Date de parution: <span class="font-weight-bold">{{ show.releasedAt() | date('Y')}} </span></p>
+    
     <div class="d-lg-flex mt-4 mb-4">
         <div class="text-center">
             {% if show.poster == 'N/A' %}
