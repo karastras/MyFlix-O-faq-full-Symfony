@@ -21,14 +21,14 @@
         <div class="text-center">
             {% if show.poster == 'N/A' %}
                 <img    src="{{ asset('/pictures/showDefault.jpg') }}"
-                        class="rounded" 
-                        style="height: 20rem; max-width: 90%" 
+                        class="rounded border border-dark" 
+                        style="height: 20rem; max-width: 21rem" 
                         alt="Le Poster de la série n'est pas présent"
                 >
             {% else %}
                 <img    src="{{ show.poster ? show.poster : asset('/pictures/showDefault.jpg') }}"
-                        class="rounded" 
-                        style="height: 20rem; max-width: 90%" 
+                        class="rounded border border-dark" 
+                        style="height: 20rem; max-width: 21rem" 
                         {# peut s'écrire  "Poster de la série #{show.title}" #}
                         alt="{{ show.poster ? "Poster de la série " ~ show.title  : "Le Poster de la série n'est pas présent" }}"
                 >
