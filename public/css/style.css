@@ -19,3 +19,34 @@ a:hover {
 .nav-link {
     font-weight: normal;
 }
+
+.showCard {
+    width: 15rem;
+}
+
+.card-show-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.cardShowImg {
+    height: 20rem;
+    min-width: 100px;
+}
+
+
+@media(max-width:767px){
+    .showCard {
+        width: auto;
+        height: auto;
+    }
+    .cardShowImg {
+        height: 100%;
+        width: 150px;
+    }
+    .btnShow{
+        display: none;
+    }
+}
